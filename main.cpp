@@ -9,28 +9,26 @@
 #include <algorithm>
 #include <cstdlib> //srand()
 
-#define TABLE_X 20 // Å×Æ®¸®½º Å×ÀÌºí xÃà ±æÀÌ
-#define TABLE_Y 38 // Å×Æ®¸®½º Å×ÀÌºí yÃà ±æÀÌ	
-#define UP 0 //¡è
-#define	DOWN 1 // ¡é
-#define LEFT 2 //	¡ç
-#define RIGHT 3 // ¡æ
-#define SUBMIT 4 // ¼±ÅÃ ( ½ºÆäÀÌ½º¹Ù )
+#define TABLE_X 20 // í…ŒíŠ¸ë¦¬ìŠ¤ í…Œì´ë¸” xì¶• ê¸¸ì´
+#define TABLE_Y 38 // í…ŒíŠ¸ë¦¬ìŠ¤ í…Œì´ë¸” yì¶• ê¸¸ì´	
+#define UP 0 //â†‘
+#define	DOWN 1 // â†“
+#define LEFT 2 //	â†
+#define RIGHT 3 // â†’
+#define SUBMIT 4 // ì„ íƒ ( ìŠ¤í˜ì´ìŠ¤ë°” )
 
 using namespace std;
 
-vector <vector<int>> table;
-vector <vector<int>> backup;
 
-// Ä¿¼­ À§Ä¡ ÀÌµ¿ ÇÔ¼ö
+// ì»¤ì„œ ìœ„ì¹˜ ì´ë™ í•¨ìˆ˜
 void gotoxy(int x, int y) { 
-	HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE); // ÄÜ¼Ö ÇÚµé °¡Á®¿À±â
+	HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE); // ì½˜ì†” í•¸ë“¤ ê°€ì ¸ì˜¤ê¸°
 	COORD pos;
 	pos.X = x;
 	pos.Y = y;
 	SetConsoleCursorPosition(consoleHandle, pos);
 }
-//Ä¿¼­ ¼û±â±â 
+//ì»¤ì„œ ìˆ¨ê¸°ê¸° 
 void cursor_view() {
 	HANDLE hConsole;
 	CONSOLE_CURSOR_INFO ConsoleCursor;
@@ -39,7 +37,7 @@ void cursor_view() {
 	ConsoleCursor.dwSize = 1;
 	SetConsoleCursorInfo(hConsole, &ConsoleCursor);
 }
-//Å°º¸µå ÀÔ·Â
+//í‚¤ë³´ë“œ ì…ë ¥
 int key_control() {
 	char tmp = _getch();
 
@@ -57,15 +55,15 @@ int key_control() {
 		return SUBMIT;
 	}
 }
-//ÃÊ±â ¼³Á¤
+//ì´ˆê¸° ì„¤ì •
 void init() {
 	system("mode con cols=56 lines=20 | title TETRIS"); 
 	cursor_view();
 }
-// Å¸ÀÌÆ² Ãâ·ÂÇÏ±â
+// íƒ€ì´í‹€ ì¶œë ¥í•˜ê¸°
 void draw_title() {
-	printf("\n\n\n\n"); // 4Ä­ °³Çà
-	printf("--------------------------------------------------------\n"); //Å¸ÀÌÆ² Ãâ·Â
+	printf("\n\n\n\n"); // 4ì¹¸ ê°œí–‰
+	printf("--------------------------------------------------------\n"); //íƒ€ì´í‹€ ì¶œë ¥
 	printf("|    #####    #####    #####    ####     #    #####    |\n");
 	printf("|      #      #          #      #   #    #   #         |\n");
 	printf("|      #      ###        #      ####     #    #####    |\n");
@@ -76,15 +74,15 @@ void draw_title() {
 	return;
 }
 
-//Á¤º¸ ÆäÀÌÁö ±×¸®±â
+//ì •ë³´ í˜ì´ì§€ ê·¸ë¦¬ê¸°
 void draw_info_menu() {
 	system("cls");
 	printf("\n\n");
-	printf("                         [Á¶ÀÛ¹ı]\n");
-	printf("                     ÀÌµ¿: W, A, S, D\n");
-	printf("                     ¼±ÅÃ: SPACE\n\n");
-	printf("                     °³¹ß : À±Áö»ó\n");
-	printf("          ½ºÆäÀÌ½º¹Ù¸¦ ´©¸£¸é ¸ŞÀÎÈ­¸éÀ¸·Î ÀÌµ¿ÇÕ´Ï´Ù.");
+	printf("                         [ì¡°ì‘ë²•]\n");
+	printf("                     ì´ë™: W, A, S, D\n");
+	printf("                     ì„ íƒ: SPACE\n\n");
+	printf("                     ê°œë°œ : ìœ¤ì§€ìƒ\n");
+	printf("          ìŠ¤í˜ì´ìŠ¤ë°”ë¥¼ ëˆ„ë¥´ë©´ ë©”ì¸í™”ë©´ìœ¼ë¡œ ì´ë™í•©ë‹ˆë‹¤.");
 
 	while (true) {
 		if (key_control() == SUBMIT) {
@@ -93,32 +91,32 @@ void draw_info_menu() {
 	}
 
 }
-//½ÃÀÛ ¸Ş´º ±×¸®±â
+//ì‹œì‘ ë©”ë‰´ ê·¸ë¦¬ê¸°
 int draw_start_menu() {
 	int x = 24;
 	int y = 12;
 	gotoxy(x - 2, y);
-	printf("> °ÔÀÓ ½ÃÀÛ"); 
+	printf("> ê²Œì„ ì‹œì‘"); 
 	gotoxy(x, y+1);
-	printf("Á¾·á");
+	printf("ì¢…ë£Œ");
 	gotoxy(x, y+2);
-	printf("°ÔÀÓ Á¤º¸");
+	printf("ê²Œì„ ì •ë³´");
 
-	while (true) { // ¹«ÇÑ ¹İº¹
+	while (true) { // ë¬´í•œ ë°˜ë³µ
 		int input = key_control();
 		switch (input) {
-		case UP: { //ÀÔ·ÂµÈ Å°ÀÇ °ªÀÌ UPÀÎ °æ¿ì (w,W)
-			if (y > 12) {//y ´Â 12~14±îÁö¸¸ ÀÌµ¿
-				gotoxy(x - 2, y); //x-2¸¦ ÇÏ´Â ÀÌÀ¯´Â ">"¸¦ µÎ Ä­ ÀÌÀü¿¡ Ãâ·ÂÇÏ±â À§ÇØ
+		case UP: { //ì…ë ¥ëœ í‚¤ì˜ ê°’ì´ UPì¸ ê²½ìš° (w,W)
+			if (y > 12) {//y ëŠ” 12~14ê¹Œì§€ë§Œ ì´ë™
+				gotoxy(x - 2, y); //x-2ë¥¼ í•˜ëŠ” ì´ìœ ëŠ” ">"ë¥¼ ë‘ ì¹¸ ì´ì „ì— ì¶œë ¥í•˜ê¸° ìœ„í•´
 				printf(" ");
-				gotoxy(x - 2, --y); //»õ·Î ÀÌµ¿ÇÑ À§Ä¡·Î ÀÌµ¿ÇÏ¿©
-				printf(">"); // ">" Ãâ·Â
+				gotoxy(x - 2, --y); //ìƒˆë¡œ ì´ë™í•œ ìœ„ì¹˜ë¡œ ì´ë™í•˜ì—¬
+				printf(">"); // ">" ì¶œë ¥
 			}
 			break;
 		}
 		
 		case DOWN: {
-			if (y < 14) { //y´Â 12~14±îÁö¸¸ ÀÌµ¿
+			if (y < 14) { //yëŠ” 12~14ê¹Œì§€ë§Œ ì´ë™
 				gotoxy(x - 2, y);
 				printf(" ");
 				gotoxy(x - 2, ++y);
@@ -129,9 +127,9 @@ int draw_start_menu() {
 
 		case SUBMIT: {
 			return y - 12;
-			// 0 : °ÔÀÓ ½ÃÀÛ
-			// 1 : °ÔÀÓ Á¾·á
-			// 2 : °ÔÀÓ Á¤º¸
+			// 0 : ê²Œì„ ì‹œì‘
+			// 1 : ê²Œì„ ì¢…ë£Œ
+			// 2 : ê²Œì„ ì •ë³´
 		}
 		}
 	}
@@ -139,11 +137,11 @@ int draw_start_menu() {
 
 
 /*
-°ø¹é : 0
-¡á : 1
-¢Æ : 2
-ÀÌ¹Ì ½×ÀÎ ºí·° : 3
-ºí·°ÀÌ ½×ÀÌ´Â ¹Ù´Ú : 4
+ê³µë°± = 0
+â–¦ = 1
+â–  = 2
+ì´ë¯¸ ìŒ“ì¸ ë¸”ëŸ­ = 3
+ë¸”ëŸ­ì´ ìŒ“ì´ëŠ” ë§¨ ë°‘ë°”ë‹¥ = 4
 */
 
 
@@ -330,7 +328,7 @@ int block7[4][4][4] ={
 	}
 };
 
-// ºí·° ºÎ¸ğ Å¬·¡½º
+// ë¸”ëŸ­ ë¶€ëª¨ í´ë˜ìŠ¤
 class block {
 protected:
 	int shape[4][4][4]; //shape[y][x]
@@ -375,8 +373,8 @@ public:
 		this->shape[r][y][x] = value;
 	}
 };
-//1¹ø ºí·° Å¬·¡½º
-class Block1:block {
+//1ë²ˆ ë¸”ëŸ­ í´ë˜ìŠ¤
+class Block1:public block {
 public:
 	Block1() {
 		x = TABLE_X / 2 - 3;
@@ -391,8 +389,8 @@ public:
 		}
 	}
 };
-//2¹ø ºí·° Å¬·¡½º
-class Block2 :block {
+//2ë²ˆ ë¸”ëŸ­ í´ë˜ìŠ¤
+class Block2 :public block {
 public:
 	Block2() {
 		x = TABLE_X / 2 - 3;
@@ -407,8 +405,8 @@ public:
 		}
 	}
 };
-//3¹ø ºí·° Å¬·¡½º
-class Block3 :block {
+//3ë²ˆ ë¸”ëŸ­ í´ë˜ìŠ¤
+class Block3 :public block {
 public:
 	Block3() {
 		x = TABLE_X / 2 - 3;
@@ -423,8 +421,8 @@ public:
 		}
 	}
 };
-//4¹ø ºí·° Å¬·¡½º
-class Block4 :block {
+//4ë²ˆ ë¸”ëŸ­ í´ë˜ìŠ¤
+class Block4 :public block {
 public:
 	Block4() {
 		x = TABLE_X / 2 - 3;
@@ -439,8 +437,8 @@ public:
 		}
 	}
 };
-//5¹ø ºí·° Å¬·¡½º
-class Block5 :block {
+//5ë²ˆ ë¸”ëŸ­ í´ë˜ìŠ¤
+class Block5 :public block {
 public:
 	Block5() {
 		x = TABLE_X / 2 - 3;
@@ -455,8 +453,8 @@ public:
 		}
 	}
 };
-//6¹ø ºí·° Å¬·¡½º
-class Block6 :block {
+//6ë²ˆ ë¸”ëŸ­ í´ë˜ìŠ¤
+class Block6 :public block {
 public:
 	Block6() {
 		x = TABLE_X / 2 - 3;
@@ -471,8 +469,8 @@ public:
 		}
 	}
 };
-//7¹ø ºí·° Å¬·¡½º
-class Block7 :block {
+//7ë²ˆ ë¸”ëŸ­ í´ë˜ìŠ¤
+class Block7 :public block {
 public:
 	Block7() {
 		x = TABLE_X / 2 - 3;
@@ -488,10 +486,10 @@ public:
 	}
 };
 
-//ºí·°,table ¹é¾÷ Å¬·¡½º -> ´õºí ¹öÆÛ¸µ
+//ë¸”ëŸ­,table ë°±ì—… í´ë˜ìŠ¤ -> ë”ë¸” ë²„í¼ë§
 class backup {
 public:
-	// ºí·° ¹é¾÷
+	// ë¸”ëŸ­ ë°±ì—…
 	static void updateBlock(block* source, block& backupBlock) {
 		backupBlock.setX(source->get_x());
 		backupBlock.setY(source->get_y());
@@ -504,12 +502,73 @@ public:
 			}
 		}
 	}
-	//Å×ÀÌºí ¹é¾÷
+	//í…Œì´ë¸” ë°±ì—…
 	static void updateTable(vector<vector<int>>& source, vector<vector<int>>& backuptable) {
 		backuptable.resize(source.size(), vector<int>(source.size()));
 		copy(source.begin(), source.end(), backuptable.begin());
 	}
 };
+//í…Œì´ë¸” í´ë˜ìŠ¤
+class Table {
+private:
+	int x;
+	int y;
+	block* blockObject;
+	vector<vector<int>> table;
+public:
+	Table(int x, int y) { //í”„ë ˆì„ ìƒì„±
+		blockObject = nullptr;
+		this->x = x;
+		this->y = y;
+		for (int i = 0; i < y; i++) {
+			vector<int> tmp;
+			for (int j = 0; j < x; j++) {
+				tmp.push_back(0);
+			}
+			table.push_back(tmp);
+		}
+		for (int i = 0; i < x; i++) {
+			table[0][i] = 1;
+			table[y - 1][i] = 1;
+		}
+		for (int i = 0; i < y - 1; i++) {
+			table[i][0] = 1;
+			table[i][x - 1] = 1;
+		}
+		for (int i = 1; i < x - 1; i++) {
+			table[y - 1][i] = 4;
+		}
+	}
+	void draw_game_table() {
+		for (int i = 0; i < y; i++) {
+			for (int j = 0; j < x; j++) {
+				if (table[i][j] == 1 || table[i][j] == 4) cout << "â–©";
+				else if (table[i][j] == 2 || table[i][j] == 3) cout << "â– ";
+				else cout << "  ";
+			}
+			cout << "\n";
+		}
+	}
+	void create_block() {
+		srand((unsigned int)time(NULL));
+		int s = rand() % 7 + 1;
+		if (s == 1)blockObject = new Block1();
+		else if (s == 2) blockObject = new Block2();
+		else if (s == 3) blockObject = new Block3();
+		else if (s == 4) blockObject = new Block4();
+		else if (s == 5) blockObject = new Block5();
+		else if (s == 6) blockObject = new Block6();
+		else if (s == 7) blockObject = new Block7();
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 4; j++) {
+				int Y = j + blockObject->get_y();
+				int X = i + blockObject->get_x();
+				table[Y][X] = blockObject->getShape(blockObject->getRotationCount(),i,j);
+			}
+		}
+	}
+ };
+
 
 int main() {
 	ios::sync_with_stdio(false);
@@ -522,7 +581,7 @@ int main() {
 		draw_title();
 		int menu_code = draw_start_menu(); 
 		if (menu_code == 0) {
-			// °ÔÀÓ ½ÃÀÛ
+			// ê²Œì„ ì‹œì‘
 			system("cls");
 			system("mode con cols=120 lines=30 | title TETRIS");
 			while (true) {
@@ -530,14 +589,14 @@ int main() {
 			
 		}
 		else if (menu_code == 1) {
-			//°ÔÀÓ Á¾·á
+			//ê²Œì„ ì¢…ë£Œ
 			exit(0);
 		}
 		else if (menu_code == 2) {
-			//°ÔÀÓ Á¤º¸
+			//ê²Œì„ ì •ë³´
 			draw_info_menu();
 		}
-		system("cls"); //ÄÜ¼ÖÃ¢ ºñ¿ì±â + ÄÜ¼Ö ÁÂÇ¥ 0,0 ÃÊ±âÈ­
+		system("cls"); //ì½˜ì†”ì°½ ë¹„ìš°ê¸° + ì½˜ì†” ì¢Œí‘œ 0,0 ì´ˆê¸°í™”
 	}
 	
 
