@@ -6,15 +6,16 @@
 #include <stdlib.h> //exit()
 #include <ctime>
 #include <vector>
+#include <conio.h>
 #include <algorithm>
 #include <cstdlib> //srand()
 
 #define TABLE_X 20 // 테트리스 테이블 x축 길이
 #define TABLE_Y 38 // 테트리스 테이블 y축 길이	
-#define UP 0 //↑
-#define	DOWN 1 // ↓
-#define LEFT 2 //	←
-#define RIGHT 3 // →
+#define UP 72 //↑
+#define	DOWN 80 // ↓
+#define LEFT 75  //	←
+#define RIGHT 77 // →
 #define SUBMIT 4 // 선택 ( 스페이스바 )
 
 using namespace std;
@@ -29,11 +30,11 @@ void gotoxy(int x, int y) {
 	SetConsoleCursorPosition(consoleHandle, pos);
 }
 //커서 숨기기 
-void cursor_view() {
+void cursor_view(char show) {
 	HANDLE hConsole;
 	CONSOLE_CURSOR_INFO ConsoleCursor;
 	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	ConsoleCursor.bVisible = 0;
+	ConsoleCursor.bVisible = show;
 	ConsoleCursor.dwSize = 1;
 	SetConsoleCursorInfo(hConsole, &ConsoleCursor);
 }
@@ -58,7 +59,7 @@ int key_control() {
 //초기 설정
 void init() {
 	system("mode con cols=56 lines=20 | title TETRIS"); 
-	cursor_view();
+	cursor_view(false);
 }
 // 타이틀 출력하기
 void draw_title() {
@@ -149,181 +150,181 @@ int block1[4][4][4] = {
 	{
 		{0,0,0,0},
 		{0,0,0,0},
-		{1,1,1,1},
+		{2,2,2,2},
 		{0,0,0,0}
 	},
 	{
-		{0,0,1,0},
-		{0,0,1,0},
-		{0,0,1,0},
-		{0,0,1,0}
+		{0,0,2,0},
+		{0,0,2,0},
+		{0,0,2,0},
+		{0,0,2,0}
 	},
 	{
 		{0,0,0,0},
 		{0,0,0,0},
-		{1,1,1,1},
+		{2,2,2,2},
 		{0,0,0,0}
 	},
 	{
-		{0,0,1,0},
-		{0,0,1,0},
-		{0,0,1,0},
-		{0,0,1,0}
+		{0,0,2,0},
+		{0,0,2,0},
+		{0,0,2,0},
+		{0,0,2,0}
 	}
 };
 int block2[4][4][4] = {
 	{
 		{0,0,0,0},
-		{0,1,1,0},
-		{0,1,1,0},
+		{0,2,2,0},
+		{0,2,2,0},
 		{0,0,0,0}
 	},
 	{
 		{0,0,0,0},
-		{0,1,1,0},
-		{0,1,1,0},
+		{0,2,2,0},
+		{0,2,2,0},
 		{0,0,0,0}
 	},
 	{
 		{0,0,0,0},
-		{0,1,1,0},
-		{0,1,1,0},
+		{0,2,2,0},
+		{0,2,2,0},
 		{0,0,0,0}
 	},
 	{
 		{0,0,0,0},
-		{0,1,1,0},
-		{0,1,1,0},
+		{0,2,2,0},
+		{0,2,2,0},
 		{0,0,0,0}
 	}
 };
 int block3[4][4][4] = {
 	{
-		{0,1,0,0},
-		{0,1,0,0},
-		{0,1,1,0},
+		{0,2,0,0},
+		{0,2,0,0},
+		{0,2,2,0},
 		{0,0,0,0}
 	},
 	{
 		{0,0,0,0},
-		{0,1,1,1},
-		{0,1,0,0},
+		{0,2,2,2},
+		{0,2,0,0},
 		{0,0,0,0}
 	},
 	{
-		{0,0,1,1},
-		{0,0,0,1},
-		{0,0,0,1},
+		{0,0,2,2},
+		{0,0,0,2},
+		{0,0,0,2},
 		{0,0,0,0}
 	},
 	{
 		{0,0,0,0},
-		{0,0,0,1},
-		{0,1,1,1},
+		{0,0,0,2},
+		{0,2,2,2},
 		{0,0,0,0}
 	}
 };
 int block4[4][4][4] = {
 	{
-		{0,1,0,0},
-		{0,1,0,0},
-		{1,1,0,0},
+		{0,2,0,0},
+		{0,2,0,0},
+		{2,2,0,0},
 		{0,0,0,0}
 	},
 	{
-		{0,1,0,0},
-		{0,1,1,1},
+		{0,2,0,0},
+		{0,2,2,2},
 		{0,0,0,0},
 		{0,0,0,0}
 	},
 	{
-		{0,0,1,1},
-		{0,0,1,0},
-		{0,0,1,0},
+		{0,0,2,2},
+		{0,0,2,0},
+		{0,0,2,0},
 		{0,0,0,0}
 	},
 	{
 		{0,0,0,0},
-		{0,1,1,1},
-		{0,0,0,1},
+		{0,2,2,2},
+		{0,0,0,2},
 		{0,0,0,0}
 	}
 };
 int block5[4][4][4] ={
 	{
-		{0,0,1,0},
-		{0,1,1,0},
-		{0,1,0,0},
+		{0,0,2,0},
+		{0,2,2,0},
+		{0,2,0,0},
 		{0,0,0,0}
 	},
 	{
 		{0,0,0,0},
-		{0,1,1,0},
-		{0,0,1,1},
+		{0,2,2,0},
+		{0,0,2,2},
 		{0,0,0,0}
 	},
 	{
-		{0,0,1,0},
-		{0,1,1,0},
-		{0,1,0,0},
+		{0,0,2,0},
+		{0,2,2,0},
+		{0,2,0,0},
 		{0,0,0,0}
 	},
 	{
 		{0,0,0,0},
-		{0,1,1,0},
-		{0,0,1,1},
+		{0,2,2,0},
+		{0,0,2,2},
 		{0,0,0,0}
 	}
 };
 int block6[4][4][4] ={
 	{
-		{0,1,0,0},
-		{0,1,1,0},
-		{0,1,0,0},
+		{0,2,0,0},
+		{0,2,2,0},
+		{0,2,0,0},
 		{0,0,0,0}
 	},
 	{
 		{0,0,0,0},
-		{0,0,1,0},
-		{0,1,1,1},
+		{0,0,2,0},
+		{0,2,2,2},
 		{0,0,0,0}
 	},
 	{
-		{0,0,1,0},
-		{0,0,1,1},
-		{0,0,1,0},
+		{0,0,2,0},
+		{0,0,2,2},
+		{0,0,2,0},
 		{0,0,0,0}
 	},
 	{
 		{0,0,0,0},
-		{0,1,1,1},
-		{0,0,1,0},
+		{0,2,2,2},
+		{0,0,2,0},
 		{0,0,0,0}
 	}
 };
 int block7[4][4][4] ={
 	{
-		{0,1,0,0},
-		{0,1,1,0},
-		{0,0,1,0},
+		{0,2,0,0},
+		{0,2,2,0},
+		{0,0,2,0},
 		{0,0,0,0}
 	},
 	{
 		{0,0,0,0},
-		{0,0,1,1},
-		{0,1,1,0},
+		{0,0,2,2},
+		{0,2,2,0},
 		{0,0,0,0}
 	},
 	{
-		{0,1,0,0},
-		{0,1,1,0},
-		{0,0,1,0},
+		{0,2,0,0},
+		{0,2,2,0},
+		{0,0,2,0},
 		{0,0,0,0}
 	},
 	{
 		{0,0,0,0},
-		{0,0,1,1},
-		{0,1,1,0},
+		{0,0,2,2},
+		{0,2,2,0},
 		{0,0,0,0}
 	}
 };
@@ -567,7 +568,146 @@ public:
 			}
 		}
 	}
+	void move_block(int key) {
+		block backupBlock;
+		vector<vector<int>> backupTable;
+		backup::updateBlock(blockObject, backupBlock);
+		backup::updateTable(table, backupTable);
+
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 4; j++	) {
+				int Y = j + blockObject->get_y();
+				int X = i + blockObject->get_x();
+				if (table[Y][X] == 2) table[Y][X] = 0;
+			}
+		} 
+		if (key == DOWN) blockObject->down(); 
+		else if (key == LEFT) blockObject->left();  
+		else if (key == RIGHT) blockObject->right(); 
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 4; j++) {
+				int Y = j + blockObject->get_y();
+				int X = i + blockObject->get_x();
+				int blockValue = blockObject->getShape(blockObject->getRotationCount(), i, j);
+				if (blockValue != 2) continue; // 블럭이 아니면 무시
+				if (table[Y][X] == 0) { // 빈 공간이면 -> 갱신
+					table[Y][X] = blockValue;
+				}
+				else if (table[Y][X] == 1) { // 블럭이 양 옆 벽에 닿으면 -> 취소
+					copy(backupTable.begin(), backupTable.end(), table.begin());
+					blockObject->setX(blockObject->get_x());
+					blockObject->setY(blockObject->get_y());
+					return;	
+				}
+				else if (table[Y][X] == 3) { // 이미 쌓여진 블럭과 접촉하면
+					copy(backupTable.begin(), backupTable.end(), table.begin()); // table 백업
+					blockObject->setX(backupBlock.get_x()); // 블럭 x 좌표 백업
+					blockObject->setY(backupBlock.get_y()); // 블럭 y 좌표 백업
+					if (key == DOWN) { // 만약 아랫 방향일 경우에
+						BuildBlock(); // 블럭을 쌓고
+						create_block(); // 새로운 블럭을 만듬
+					}
+					return; // 함수 종료
+				}
+				else if (table[Y][X] == 4) { //	 맨 밑바닥에 접촉했으면
+					copy(backupTable.begin(), backupTable.end(), table.begin()); // table 백업
+					blockObject->setX(backupBlock.get_x()); // 블럭 x 좌표 백업
+					blockObject->setY(backupBlock.get_y()); // 블럭 y 좌표 백업
+					if (key == DOWN) { // 만약 아랫 방향일 경우에
+						BuildBlock(); // 블럭을 쌓고
+						create_block(); // 새로운 블럭을 만듬
+					}
+					return; // 함수 종료
+				}
+			}
+		}
+	} 
+	void rotate_block() {
+		block backupBlock; 
+		vector<vector<int>> backupTable;
+		backup::updateBlock(blockObject, backupBlock);
+		backup::updateTable(table, backupTable);
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 4; j++) {
+				int Y = j + blockObject->get_y();
+				int X = i + blockObject->get_x();
+				if (table[Y][X] == 2)
+					table[Y][X] = 0;
+			}
+		}
+		blockObject->rotate();
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 4; j++) {
+				int Y = j + blockObject->get_y();
+				int X = i + blockObject->get_x();
+				int blockValue = blockObject->getShape(blockObject->getRotationCount(), i, j);
+				if (blockValue != 2) continue;
+				if (table[Y][X] == 0) table[Y][X] = blockObject->getShape(blockObject->getRotationCount(), i, j);
+				else if (table[Y][X] == 1 || table[Y][X] == 4 || table[Y][X] == 3) {
+					copy(backupTable.begin(), backupTable.end(), table.begin());
+					blockObject->setRotationCount(backupBlock.getRotationCount());
+					return;
+				}
+			}
+		}
+	}
+	
+
+
+	void BuildBlock() {
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 4; j++) {
+				int Y = j + blockObject->get_y();
+				int X = i + blockObject->get_x();
+				int blockValue = blockObject->getShape(blockObject->getRotationCount(), i, j); //블럭 배열 값 얻기
+				if (blockValue != 2) continue; // 블럭이 아니면 무시 (블럭은 2로 이루어져있음)
+				table[Y][X] = 3;
+			}
+		}
+	}
  };
+
+ class GamePlay {
+ private:
+	 Table* t;
+ public:
+	 GamePlay() {
+		 t = new Table(TABLE_X, TABLE_Y);
+		 t->create_block();
+		 t->draw_game_table();
+		 while (1) {
+			 int nselect;
+			 if (_kbhit()) {
+				 nselect = _getch();
+				 if (nselect == 224) {
+					 nselect = _getch();
+					 switch (nselect)
+					 {
+					 case UP:
+						 t->rotate_block();
+						 break;
+					 case DOWN:
+						 t->move_block(DOWN);
+						 break;
+					 case LEFT:
+						 t->move_block(LEFT);
+						 break;
+					 case RIGHT:			
+						 t->move_block(RIGHT);
+						 break;
+					 default:
+						 break;
+					 }
+				 }
+			 }
+			 gotoxy(0, 0);
+			 t->draw_game_table();
+		 }
+	 }
+	 ~GamePlay() {
+		 delete t;
+	 }
+};
 
 
 int main() {
@@ -583,10 +723,8 @@ int main() {
 		if (menu_code == 0) {
 			// 게임 시작
 			system("cls");
-			system("mode con cols=120 lines=30 | title TETRIS");
-			while (true) {
-			}	
-			
+			system("mode con cols=100 lines=40 | title TETRIS"); 
+			break;
 		}
 		else if (menu_code == 1) {
 			//게임 종료
@@ -598,7 +736,10 @@ int main() {
 		}
 		system("cls"); //콘솔창 비우기 + 콘솔 좌표 0,0 초기화
 	}
-	
+	Table(TABLE_X, TABLE_Y);
+	GamePlay();
+	getchar();
 
 	return 0;
 }
+
