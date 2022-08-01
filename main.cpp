@@ -4,19 +4,20 @@
 #include <Windows.h> // gotoxy()
 #include<conio.h> // _getch()
 #include <stdlib.h> //exit()
-#include <ctime>
+#include <ctime> // time
 #include <vector>
 #include <conio.h>
 #include <algorithm>
 #include <cstdlib> //srand()
 
+#define END_Y 4
 #define TABLE_X 20 // 테트리스 테이블 x축 길이
 #define TABLE_Y 38 // 테트리스 테이블 y축 길이	
 #define UP 72 //↑
 #define	DOWN 80 // ↓
 #define LEFT 75  //	←
 #define RIGHT 77 // →
-#define SUBMIT 4 // 선택 ( 스페이스바 )
+#define SUBMIT 32 // 선택 ( 스페이스바 )
 
 using namespace std;
 
@@ -80,7 +81,7 @@ void draw_info_menu() {
 	system("cls");
 	printf("\n\n");
 	printf("                         [조작법]\n");
-	printf("                     이동: W, A, S, D\n");
+	printf("                     이동: arrows\n");
 	printf("                     선택: SPACE\n\n");
 	printf("                     개발 : 윤지상\n");
 	printf("          스페이스바를 누르면 메인화면으로 이동합니다.");
@@ -373,6 +374,7 @@ public:
 	void setShape(int r, int y, int x, int value) {
 		this->shape[r][y][x] = value;
 	}
+	void up() { y--; }
 };
 //1번 블럭 클래스
 class Block1:public block {
@@ -583,7 +585,8 @@ public:
 		} 
 		if (key == DOWN) blockObject->down(); 
 		else if (key == LEFT) blockObject->left();  
-		else if (key == RIGHT) blockObject->right(); 
+		else if (key == RIGHT) blockObject->right();
+
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
 				int Y = j + blockObject->get_y();
@@ -595,8 +598,8 @@ public:
 				}
 				else if (table[Y][X] == 1) { // 블럭이 양 옆 벽에 닿으면 -> 취소
 					copy(backupTable.begin(), backupTable.end(), table.begin());
-					blockObject->setX(blockObject->get_x());
-					blockObject->setY(blockObject->get_y());
+					blockObject->setX(backupBlock.get_x());
+					blockObject->setY(backupBlock.get_y());
 					return;	
 				}
 				else if (table[Y][X] == 3) { // 이미 쌓여진 블럭과 접촉하면
@@ -665,6 +668,58 @@ public:
 			}
 		}
 	}
+
+	void dropBlock() {
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 4; j++) {
+				int Y = j + blockObject->get_y();
+				int X = i + blockObject->get_x();
+				if (table[Y][X] == 2) table[Y][X] = 0;
+			}
+		}
+
+		while (1) {
+			for (int i = 0; i < 4; i++) {
+				for (int j = 0; j < 4; j++) {
+					int Y = j + blockObject->get_y();
+					int X = i + blockObject->get_x();
+					int blockValue = blockObject->getShape(blockObject->getRotationCount(), i, j); //블럭 배열 값 얻기
+
+					if (blockValue != 2) continue; // 블럭이 아니면 무시 (블럭은 2로 이루어져있음)
+
+					if (table[Y][X] == 3 || table[Y][X] == 4) { // 블럭이나 벽을 만나면
+						blockObject->up(); // 한 칸 위로 올리고
+						BuildBlock(); // 블럭을 쌓고
+						create_block(); // 새로운 블럭을 만듬
+						return; // 함수 종료
+					}
+				}
+			}
+			blockObject->down(); // 블럭을 한 칸 아래로 이동
+		}
+	}
+	void delete_linear() {
+		for (int Y = END_Y - 1; Y < TABLE_Y - 1; Y++) {
+			bool isLinear = true;
+			for (int X = 1; X < TABLE_X - 1; X++) {
+				if (table[Y][X] != 3) isLinear = false;
+			}
+			if (isLinear) {
+				for (int i = Y; i > END_Y - 1; i--) {
+					for (int j = 1; j < TABLE_Y; j++) {
+						table[i][j] = table[i - 1][j];
+					}
+				}
+			}
+		}
+	}
+
+	bool isReachEnding() {
+		for (int X = 1; X < TABLE_X - 1; X++) {
+			if (table[END_Y][X] == 3) return true;
+		}
+		return false;
+	}
  };
 
  class GamePlay {
@@ -675,8 +730,18 @@ public:
 		 t = new Table(TABLE_X, TABLE_Y);
 		 t->create_block();
 		 t->draw_game_table();
+		 int timer = 0;
+		 clock_t start, end;
+		 start = clock();
+		 float time;
 		 while (1) {
 			 int nselect;
+			 end = clock();
+			 time = ((float)(end - start) / CLOCKS_PER_SEC);
+			 if (time >= 1.5) { // 약 1.5초가 지나면
+				 t->move_block(DOWN); //블럭을 한 칸 떨어뜨림
+				 start = clock(); // 시간을 다시 잰다
+			 }
 			 if (_kbhit()) {
 				 nselect = _getch();
 				 if (nselect == 224) {
@@ -699,12 +764,23 @@ public:
 						 break;
 					 }
 				 }
+				 else if (nselect == SUBMIT) { // 스페이스바 눌렀을 때
+					 t->dropBlock(); // 블럭을 바로 떨어뜨린다
+				 }
 			 }
 			 gotoxy(0, 0);
 			 t->draw_game_table();
 		 }
+		 if (t->isReachEnding())return; // 쌓은 블럭이 종료 선에 닿으면 게임 종료
+		 t->delete_linear();
+		 gotoxy(0, 0); //system("cls") 안쓰고 (0, 0)으로 커서 이동 후
+		 t->draw_game_table(); // 다시 그리기
 	 }
+
 	 ~GamePlay() {
+		 system("cls");
+		 gotoxy(12, 12);
+		 cout << "GAME OVER";
 		 delete t;
 	 }
 };
@@ -724,7 +800,9 @@ int main() {
 			// 게임 시작
 			system("cls");
 			system("mode con cols=100 lines=40 | title TETRIS"); 
-			break;
+			Table(TABLE_X, TABLE_Y);
+			GamePlay();
+			getchar();
 		}
 		else if (menu_code == 1) {
 			//게임 종료
@@ -736,9 +814,7 @@ int main() {
 		}
 		system("cls"); //콘솔창 비우기 + 콘솔 좌표 0,0 초기화
 	}
-	Table(TABLE_X, TABLE_Y);
-	GamePlay();
-	getchar();
+	
 
 	return 0;
 }
